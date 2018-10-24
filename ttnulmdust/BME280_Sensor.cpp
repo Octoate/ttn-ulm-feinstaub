@@ -35,6 +35,7 @@ bool BME280_Sensor::setup()
 // ****************************************************************
 int16_t BME280_Sensor::readTemperature(void)
 {
+    checkUpdate();
     float temperature = bme280.readTemperature();
     if (isnan(temperature))
     {
@@ -52,6 +53,7 @@ int16_t BME280_Sensor::readTemperature(void)
 // ****************************************************************
 int16_t BME280_Sensor::readPressure(void)
 {
+    checkUpdate();
     float pressure = bme280.readPressure();
     if (isnan(pressure))
     {
@@ -69,6 +71,7 @@ int16_t BME280_Sensor::readPressure(void)
 // ****************************************************************    
 int16_t BME280_Sensor::readHumidity(void)
 {
+    checkUpdate();
     float humidity = bme280.readHumidity();
     if (isnan(humidity))
     {
@@ -79,4 +82,15 @@ int16_t BME280_Sensor::readHumidity(void)
     debugSerial.println(String(humidity));
 
     return round(humidity * 100);
+}
+
+void BME280_Sensor::checkUpdate(void)
+{
+    unsigned long currentTime = millis();
+    if (nextUpdate < currentTime)
+    {
+        debugSerial.println(F("Force BME280 update."));
+        bme280.takeForcedMeasurement();
+        nextUpdate = millis() + 1000;
+    }
 }

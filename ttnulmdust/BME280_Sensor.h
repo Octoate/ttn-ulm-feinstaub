@@ -20,9 +20,13 @@ class BME280_Sensor
         int16_t readHumidity(void);
 
     private:
+        // time until next measurement in milliseconds
+        static const unsigned long DeltaTimeForForcedMeasurement = 1000;
         Serial_ debugSerial;
         uint8_t address;
+        unsigned long nextUpdate = 0;
         Adafruit_BME280 bme280;
+        void checkUpdate(void);
 };
 
 #endif
